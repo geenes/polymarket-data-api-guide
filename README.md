@@ -30,7 +30,10 @@ Requires `curl`; `jq` is optional for formatting and discovery. These requests r
 curl --fail-with-body --max-time 20 'https://data-api.polymarket.com/'
 
 # Two recent taker-side trade records; no wallet required.
-curl --fail-with-body --max-time 20 --get   'https://data-api.polymarket.com/trades'   --data-urlencode 'limit=2'   --data-urlencode 'takerOnly=true'
+curl --fail-with-body --max-time 20 --get \
+  'https://data-api.polymarket.com/trades' \
+  --data-urlencode 'limit=2' \
+  --data-urlencode 'takerOnly=true'
 ```
 
 To read a wallet, replace the placeholder with its public profile/position-holding address. Do not paste a seed phrase or private key.
@@ -38,7 +41,12 @@ To read a wallet, replace the placeholder with its public profile/position-holdi
 ```bash
 export POLY_WALLET='REPLACE_WITH_0x_WALLET_ADDRESS'
 
-curl --fail-with-body --max-time 20 --get   'https://data-api.polymarket.com/positions'   --data-urlencode "user=$POLY_WALLET"   --data-urlencode 'sizeThreshold=0'   --data-urlencode 'includeArchived=true'   --data-urlencode 'limit=100'
+curl --fail-with-body --max-time 20 --get \
+  'https://data-api.polymarket.com/positions' \
+  --data-urlencode "user=$POLY_WALLET" \
+  --data-urlencode 'sizeThreshold=0' \
+  --data-urlencode 'includeArchived=true' \
+  --data-urlencode 'limit=100'
 ```
 
 This requests one page. `sizeThreshold=0` includes positions below the default one-share threshold; `includeArchived=true` requests still-active positions in archived markets. A successful empty array is a valid response and is not, by itself, an authentication problem. [Official positions reference](https://docs.polymarket.com/api-reference/core/get-current-positions-for-a-user)
@@ -73,16 +81,23 @@ Polymarket uses multiple identifiers. The Data API `market` filter expects a **c
 A signer address and a proxy/deposit wallet need not be the same address. Resolve a supplied wallet through Gamma's public profile endpoint and inspect its `proxyWallet`; check it against a known position or trade before concluding the account is empty. Gamma accepts a proxy wallet or user address as the profile lookup input. [Public profile reference](https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address)
 
 ```bash
-curl --fail-with-body --max-time 20 --get   'https://gamma-api.polymarket.com/public-profile'   --data-urlencode "address=$POLY_WALLET"
+curl --fail-with-body --max-time 20 --get \
+  'https://gamma-api.polymarket.com/public-profile' \
+  --data-urlencode "address=$POLY_WALLET"
 ```
 
 Discover a market and extract its condition ID with `jq`:
 
 ```bash
-POLY_MARKET_JSON=$(curl --fail-with-body --max-time 20 --get   'https://gamma-api.polymarket.com/markets'   --data-urlencode 'closed=false' --data-urlencode 'limit=1')
+POLY_MARKET_JSON=$(curl --fail-with-body --max-time 20 --get \
+  'https://gamma-api.polymarket.com/markets' \
+  --data-urlencode 'closed=false' --data-urlencode 'limit=1')
 export POLY_CONDITION_ID=$(printf '%s' "$POLY_MARKET_JSON" | jq -er '.[0].conditionId')
 
-curl --fail-with-body --max-time 20 --get   'https://data-api.polymarket.com/holders'   --data-urlencode "market=$POLY_CONDITION_ID"   --data-urlencode 'limit=20'
+curl --fail-with-body --max-time 20 --get \
+  'https://data-api.polymarket.com/holders' \
+  --data-urlencode "market=$POLY_CONDITION_ID" \
+  --data-urlencode 'limit=20'
 ```
 
 Gamma may represent `outcomes`, `outcomePrices`, and `clobTokenIds` as JSON-encoded strings. Parse those values before indexing them, and match outcomes to token IDs by array position. Check equal array lengths. Keep token IDs as strings: conversion to a JavaScript `Number` can corrupt the identifier. A sample of one market is discovery, not a complete active-market catalogue. [Official market discovery guide](https://docs.polymarket.com/market-data/discover-markets)
@@ -579,7 +594,15 @@ Run the [complete JavaScript example](https://github.com/geenes/polymarket-data-
 export POLY_START=1
 export POLY_END=$(date +%s)
 
-curl --fail-with-body --max-time 20 --get   'https://data-api.polymarket.com/activity'   --data-urlencode "user=$POLY_WALLET"   --data-urlencode 'excludeDepositsWithdrawals=false'   --data-urlencode "start=$POLY_START"   --data-urlencode "end=$POLY_END"   --data-urlencode 'sortBy=TIMESTAMP'   --data-urlencode 'sortDirection=ASC'   --data-urlencode 'limit=100'
+curl --fail-with-body --max-time 20 --get \
+  'https://data-api.polymarket.com/activity' \
+  --data-urlencode "user=$POLY_WALLET" \
+  --data-urlencode 'excludeDepositsWithdrawals=false' \
+  --data-urlencode "start=$POLY_START" \
+  --data-urlencode "end=$POLY_END" \
+  --data-urlencode 'sortBy=TIMESTAMP' \
+  --data-urlencode 'sortDirection=ASC' \
+  --data-urlencode 'limit=100'
 ```
 
 That is the first page, not a complete lifetime export. For only deposits and withdrawals add `type=DEPOSIT,WITHDRAWAL`; keep `excludeDepositsWithdrawals=false`. Separate deposit/withdrawal cash flows from trading returns before computing performance.
@@ -587,7 +610,10 @@ That is the first page, not a complete lifetime export. For only deposits and wi
 ### Download accounting CSVs
 
 ```bash
-curl --fail-with-body --max-time 30 --get   'https://data-api.polymarket.com/v1/accounting/snapshot'   --data-urlencode "user=$POLY_WALLET"   --output polymarket-accounting.zip
+curl --fail-with-body --max-time 30 --get \
+  'https://data-api.polymarket.com/v1/accounting/snapshot' \
+  --data-urlencode "user=$POLY_WALLET" \
+  --output polymarket-accounting.zip
 unzip -l polymarket-accounting.zip
 ```
 
