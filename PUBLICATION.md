@@ -27,3 +27,9 @@ Google's guidance emphasizes useful, original, accessible content and foundation
 ## Next measurements
 
 After discovery/indexing has had time to occur, record dated visibility checks for the actual repository and Gist URLs and relevant developer queries. Track substantive issues, example usage, and genuine citations as maintenance feedback. No ranking outcome, backlink campaign, recurring monitor, or indexing submission has been claimed or performed as part of this initial publication.
+
+## V2/V3 and SDK content revision
+
+Expanded the title, introduction, navigation, and FAQ to answer current Polymarket API version and official SDK queries. Added a version compatibility table, official package directory with dated runtime/version pins, protocol-neutral identifier guidance, raw-versus-SDK field comparisons, runnable SDK examples, a contract map, and migration limitations. Existing endpoint anchors and public URLs are retained. The repository and existing Gist remain two views of one maintained README.
+
+Validation distinguishes official code evidence of Exchange V3 support from live public CTF data reads. No ranking, indexing, or AI citation outcome is implied by this revision.
