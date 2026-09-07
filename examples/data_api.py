@@ -102,18 +102,30 @@ def parse_array(value):
     return value
 
 
+def map_market(market):
+    """Preserve CTF and PolyV2 mappings without choosing a trading protocol."""
+    outcomes = parse_array(market['outcomes'])
+    arrays = {}
+    for field in ('clobTokenIds', 'positionIds'):
+        value = market.get(field)
+        values = parse_array(value) if value is not None else []
+        if values and len(values) != len(outcomes):
+            raise ValueError(f'{field}/outcome mapping has different lengths')
+        if any(item is not None and not isinstance(item, str) for item in values):
+            raise TypeError(f'{field} must contain string IDs or nulls')
+        arrays[field] = values or [None] * len(outcomes)
+    return {'conditionId': market.get('conditionId'), 'slug': market['slug'],
+            'version': market.get('version'),
+            'outcomes': [{'outcome': name, 'tokenId': token, 'positionId': position}
+                         for name, token, position in zip(outcomes,
+                            arrays['clobTokenIds'], arrays['positionIds'])]}
+
+
 def market_example():
     markets = get_json('/markets', {'closed': False, 'limit': 1}, base=GAMMA_API)
     if not markets:
         raise RuntimeError('No market returned')
-    market = markets[0]
-    outcomes = parse_array(market['outcomes'])
-    tokens = parse_array(market['clobTokenIds'])
-    if len(tokens) != len(outcomes):
-        raise ValueError('Token/outcome mapping has different lengths')
-    return {'conditionId': market['conditionId'], 'slug': market['slug'],
-            'outcomes': [{'outcome': name, 'tokenId': str(token)}
-                         for name, token in zip(outcomes, tokens)]}
+    return map_market(markets[0])
 
 
 def main():

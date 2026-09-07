@@ -1,4 +1,4 @@
-// Read-only Node.js 22+ example. Token IDs remain strings.
+// Read-only Node.js 22+ example. Asset IDs remain strings.
 const DATA_API = 'https://data-api.polymarket.com';
 
 export async function getData(path, params = {}) {
@@ -21,7 +21,7 @@ if (!Array.isArray(trades)) throw new TypeError('Expected trade array');
 console.log(trades.map(row => ({
   wallet: row.proxyWallet,
   conditionId: row.conditionId,
-  tokenId: row.asset, // Never Number(row.asset).
+  assetId: row.asset, // Never Number(row.asset).
   time: new Date(row.timestamp * 1000).toISOString(),
   side: row.side,
   size: row.size,

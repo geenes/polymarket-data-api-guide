@@ -1,0 +1,8 @@
+{
+  "name": "polymarket-data-guide-examples",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": { "sdk:public": "node sdk-public.mjs" },
+  "dependencies": { "@polymarket/client": "0.9.0" }
+}
